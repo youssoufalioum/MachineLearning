@@ -19,11 +19,11 @@
     <version>1.0.0-beta3</version>
   </dependency>
   
-  <dependency>
+  <!-- <dependency>
     <groupId>org.nd4j</groupId>
     <artifactId>nd4j-cuda-8.0-platform</artifactId>
     <version>1.0.0-beta3</version>
-  </dependency>
+  </dependency> -->
   
   <dependency>
     <groupId>org.nd4j</groupId>
@@ -38,7 +38,7 @@
   </dependency>
   
   <dependency>
-    <groupId>org.slf4j</groupId>
+    <groupId>org.slf4j</groupId> 
     <artifactId>slf4j-simple</artifactId>
     <version>1.6.1</version>
  </dependency>

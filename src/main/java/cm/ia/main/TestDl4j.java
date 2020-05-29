@@ -18,13 +18,17 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
+import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.api.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.io.ClassPathResource;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
+
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 
 public class TestDl4j {
 
@@ -38,6 +42,8 @@ public class TestDl4j {
 		int classIndex=4;
 		int numEpochs=100;
 		
+		
+		//Configuration du Modele:
 		MultiLayerConfiguration configuration = new NeuralNetConfiguration.Builder()
 				.updater(new Adam(learningRate))
 				.list()
@@ -55,15 +61,17 @@ public class TestDl4j {
 				.build();
 		//System.out.println(configuration.toJson());
 		
+		//Creation du Modele:
 		MultiLayerNetwork model = new MultiLayerNetwork(configuration);
 		model.init();
 		
+		//Entrainement du Modele:
 		File fileEntrainement= new ClassPathResource("entrainement.csv").getFile();
 		RecordReader recordReaderTrain = new CSVRecordReader();
 		recordReaderTrain.initialize(new FileSplit(fileEntrainement));
-		
 		DataSetIterator dataSetIteratorTrain = new RecordReaderDataSetIterator(recordReaderTrain,batchSize,classIndex,numOutput);
 		
+		//Démarage du serveur de Monitoring du processus d'apprentissage
 		UIServer uiServer = UIServer.getInstance();
 		InMemoryStatsStorage statsStorage = new InMemoryStatsStorage(); 
 		uiServer.attach(statsStorage);
@@ -73,8 +81,10 @@ public class TestDl4j {
 			model.fit(dataSetIteratorTrain);
 		}
 		
+		
 		System.out.println("Evaluation");
 		
+		//Evaluation du Modele:
 		File fileTest= new ClassPathResource("test.csv").getFile();
 		RecordReader recordReaderTest = new CSVRecordReader();
 		recordReaderTest.initialize(new FileSplit(fileTest));
@@ -90,6 +100,10 @@ public class TestDl4j {
 		}
 		
 		System.out.println(evaluation.stats());
+		
+		ModelSerializer.writeModel(model,"irisModel.zip",true);
+		
+		
 	}
 
 }
